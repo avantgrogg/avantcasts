@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "start": "neutrino start --presets neutrino-preset-node && node build/index.js",
+    "start-inspection": "neutrino start --presets neutrino-preset-node && node build/index.js --inspect",
     "build": "neutrino build --presets neutrino-preset-node",
     "test": "neutrino test --presets neutrino-preset-node neutrino-preset-mocha"
   },
@@ -27,5 +28,9 @@
     "neutrino-preset-node": "^4.2.2",
     "neutrino-preset-react": "^4.2.3"
   },
-  "repository": "git@github.com:avantgrogg/avantcasts.git"
+  "repository": "git@github.com:avantgrogg/avantcasts.git",
+  "dependencies": {
+    "koa-better-router": "^2.1.1",
+    "node-fetch": "^1.6.3"
+  }
 }
