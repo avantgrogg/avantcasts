@@ -1,0 +1,23 @@
+{
+  "name": "avantcasts",
+  "version": "0.0.1",
+  "description": "A podcast app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "koa",
+    "koa2",
+    "graphql",
+    "react",
+    "redux",
+    "mocha"
+  ],
+  "author": "Douglas Grogg",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^3.17.0",
+    "eslint-plugin-react": "^6.10.0"
+  }
+}
