@@ -3,8 +3,13 @@ export function home() {
     return `Welcome home`;
 }
 
-export function search() {
-    return `This is a search page`;
+export async function search(ctx) {
+    const searchValue = ctx.query['query'];
+    const searchRef = ctx.state.db.ref('searches')
+    const res = await fetch(`https://itunes.apple.com/search?media=podcast&term=${searchValue}`);
+    const resJSON = await res.json();
+    const newSearchRef = await searchRef.push().set({[searchValue]: resJSON});
+    return resJSON;
 }
 
 export async function popular() {
@@ -13,6 +18,8 @@ export async function popular() {
     return resJSON;
 }
 
-export function mypodcasts() {
-    return `These are your podcast`;
+export async function mypodcasts(ctx) {
+    const userRef = ctx.state.db.ref('users/doug');
+    const userVal = await userRef.once('value', (data) => Promise.resolve(data.toJSON()));
+    return userVal;
 }
