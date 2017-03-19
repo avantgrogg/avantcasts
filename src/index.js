@@ -1,11 +1,21 @@
-import Koa from 'koa'; 
-import * as routes from './routes/routes';
-import Router from 'koa-better-router';
+const Koa = require('koa'); 
+const routes = require('./routes/routes');
+const Router = require('koa-better-router');
+const send = require('koa-send');
+const views = require('koa-views');
+const cache = require('koa-cache-lite');
+
+// use in-memory cache
+cache.configure({
+  '/performsearch/:searchterm': 3000
+}, {
+  debug: false
+})
 const router = Router().loadMethods();
 
-import * as admin from 'firebase-admin';
+const admin = require('firebase-admin');
 
-import * as serviceAccount from '../firebase.json';
+const serviceAccount = require('../firebase.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -15,13 +25,21 @@ admin.initializeApp({
 const app = new Koa();
 
 router.get('/', async (ctx, next) => {
-  ctx.body = routes.home();
+  ctx.state.homeData = routes.home();
+  ctx.state = Object.assign({}, ctx.state, { title: 'home page'});
+  await ctx.render('./templates/home.nunj')
+  await next();
+})
+
+router.get('/api/search/:searchterm', async (ctx, next) => {
+  console.log('searching...');
+  ctx.body = await routes.search(ctx);
   await next();
 })
 
 router.get('/search', async (ctx, next) => {
-  ctx.body = await routes.search(ctx);
-  await next();
+  ctx.state = Object.assign({}, ctx.state, { title: 'Search Page'});
+  await ctx.render('./templates/search.nunj');
 })
 
 router.get('/popular', async (ctx, next) => {
@@ -34,6 +52,15 @@ router.get('/mypodcasts', async (ctx, next) => {
   await next();
 })
 
+router.get('/css/:file', async (ctx, next) => {
+  const fileName = ctx.params.file;
+  await send(ctx, `./public/css/${fileName}`);
+})
+
+router.get('/js/:file', async (ctx, next) => {
+  const fileName = ctx.params.file;
+  await send(ctx, `./public/js/${fileName}`);
+})
 
 
 app.use(async (ctx, next) => {
@@ -43,11 +70,14 @@ app.use(async (ctx, next) => {
   console.log(`That took ${ms}`);
 });
 
+app.use(views(__dirname, { map: {nunj: 'nunjucks' }}))
+
 app.use(async (ctx, next) => {
   ctx.state['db'] = admin.database();
   await next();
 })
 
-app.use(router.middleware())
+app.use(cache.middleware());
+app.use(router.middleware());
 
 app.listen(3000);

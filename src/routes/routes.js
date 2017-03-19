@@ -1,24 +1,43 @@
-import fetch from 'node-fetch';
-export function home() {
+const fetch = require('node-fetch');
+const get = require('lodash/get');
+module.exports = {
+    home: home,
+    search: search,
+    popular: popular,
+    mypodcasts: mypodcasts
+}
+
+function home() {
     return `Welcome home`;
 }
 
-export async function search(ctx) {
-    const searchValue = ctx.query['query'];
+async function search(ctx) {
+    const searchValue = ctx.params.searchterm;
+    console.log(searchValue);
     const searchRef = ctx.state.db.ref('searches')
-    const res = await fetch(`https://itunes.apple.com/search?media=podcast&term=${searchValue}`);
+    const res = await fetch(`https://itunes.apple.com/search?media=podcast&entity=podcast&limit=10&term=${searchValue}`);
     const resJSON = await res.json();
-    const newSearchRef = await searchRef.push().set({[searchValue]: resJSON});
-    return resJSON;
+    const orchestratedData= resJSON.results.map((result, idx) => {
+        return {
+            artistId: get(result, 'artistId', ''),
+            collectionId: get(result, 'collectionId', ''),
+            artistName: get(result, 'artistName', ''),
+            collectionName: get(result, 'collectionName', ''),
+            feedUrl: get(result, 'feedUrl', ''),
+            artwork: get(result, 'artworkUrl600', '')
+        }
+    });
+    const newSearchRef = await searchRef.push().set({[searchValue]: orchestratedData});
+    return orchestratedData;
 }
 
-export async function popular() {
+async function popular() {
     const res = await fetch(`https://itunes.apple.com/us/rss/toppodcasts/limit=10/explicit=true/json`);
     const resJSON = await res.json();
     return resJSON;
 }
 
-export async function mypodcasts(ctx) {
+async function mypodcasts(ctx) {
     const userRef = ctx.state.db.ref('users/doug');
     const userVal = await userRef.once('value', (data) => Promise.resolve(data.toJSON()));
     return userVal;
