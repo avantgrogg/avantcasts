@@ -1,10 +1,13 @@
 const fetch = require('node-fetch');
 const get = require('lodash/get');
+const feedparser = require('feedparser-promised');
+
 module.exports = {
     home: home,
     search: search,
     popular: popular,
-    mypodcasts: mypodcasts
+    mypodcasts: mypodcasts,
+    getFeed: getFeed
 }
 
 function home() {
@@ -27,8 +30,14 @@ async function search(ctx) {
             artwork: get(result, 'artworkUrl600', '')
         }
     });
-    const newSearchRef = await searchRef.push().set({[searchValue]: orchestratedData});
+    //const newSearchRef = await searchRef.push().set({[searchValue]: orchestratedData});
     return orchestratedData;
+}
+
+async function getFeed(ctx) {
+    const url = ctx.request.body.podcastUrl;
+    const podcastEps = await feedparser.parse(url).then(items => Promise.resolve(items));
+    return podcastEps;
 }
 
 async function popular() {

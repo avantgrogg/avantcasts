@@ -1,30 +1,24 @@
-import { connect } from 'react-redux';
-import { SearchForm } from './searchForm';
-import $ from 'jquery';
-import { performSearch, saveResult } from '../actions/searchActions';
+import React from 'react';
+import { get } from 'lodash';
 
-const mapStateToProps = (state) => {
-    return {
-        state: state
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onSearchSubmit: (event) => {
-            event.preventDefault();
-            const term = $('.js-search-input').val();
-            dispatch(performSearch(term));
-        },
-        saveResult: (event) => {
-            event.preventDefault();
-            const resultId = event.target.getAttribute('data-collection-id');
-            dispatch(saveResult(resultId));
-        }
-    };
-};
-
-export const Search = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SearchForm);
+export const Search = ({ state, onSearchSubmit, saveResult }) => (
+  <div>
+    <form onSubmit={e => onSearchSubmit(e)}>
+        <h1>Search Form</h1>
+        <input type="search" className='js-search-input'></input>
+        <button name="submit" className='js-submit-search'></button>
+    </form>
+    <h1>{ get(state, 'search.results.resultCount', '') }</h1>
+    <div className="columns is-multiline">
+      {get(state, 'search.results', []).map((result, idx) => {
+        return <div className="column is-4" key={idx}>
+                <form onSubmit={e => saveResult(e)} data-collection-id={result.collectionId} data-key={idx}>
+                  <img src={result.artwork}></img>
+                  <span>{result.collectionName}</span>
+                  <button name="submit" className="js-save-result">Save</button>
+                </form>
+              </div>;
+      })}
+    </div>
+  </div>
+);

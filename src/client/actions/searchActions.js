@@ -1,6 +1,7 @@
 export const PERFORM_SEARCH = 'PERFORM_SEARCH';
 export const SAVE_SEARCH_RESULT = 'SAVE_SEARCH_RESULT';
 export const SAVE_RESULT = 'SAVE_RESULT';
+export const UPDATE_PODCAST_LIST = 'UPDATE_PODCAST_LIST';
 
 export function performSearch(term = '') {
     return {
@@ -26,5 +27,12 @@ export function saveResult(result = {}) {
         payload: {
             result
         }
+    };
+}
+
+export function updatePodcastList(podcast = {}) {
+    return {
+        type: UPDATE_PODCAST_LIST,
+        payload: podcast
     };
 }

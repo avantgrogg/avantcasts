@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>{{title}}</title>
+        <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
         <h1>Hey this is a nunjucks file</h1>

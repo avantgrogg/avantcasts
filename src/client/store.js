@@ -1,16 +1,24 @@
 import { app } from './reducers/reducers';
-import { applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, createStore, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import createLogger from 'redux-logger';
-import { searchSaga } from './sagas/searchSagas';
+import { searchSaga, saveResultSaga } from './sagas/searchSagas';
+import { showPodcastSaga, selectEpisodeSaga } from './sagas/podcastSagas';
+
 const logger = createLogger();
 const sagaMiddleware = createSagaMiddleware();
 let initialState = {
-    searchValue: ''
+    searchValue: '',
+    podcasts: [],
+    selected: {},
+    player: {}
 };
 
 export function generateStore() {
-    const store = createStore(app, initialState, applyMiddleware(logger, sagaMiddleware));
+    const store = createStore(app, initialState, applyMiddleware(logger, sagaMiddleware), initialState);
     sagaMiddleware.run(searchSaga);
+    sagaMiddleware.run(saveResultSaga);
+    sagaMiddleware.run(showPodcastSaga);
+    sagaMiddleware.run(selectEpisodeSaga);
     return store;
 }
