@@ -3,4 +3,3 @@ build
 yarn.lock
 .vscode
 .DS_Store
-firebase.json
