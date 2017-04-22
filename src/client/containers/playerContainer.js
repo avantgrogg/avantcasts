@@ -11,6 +11,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         playAudio: (event) => {
             const music = document.getElementById('music');
+            music.load();
             if (music.paused) {
                 music.play();
             } else {
