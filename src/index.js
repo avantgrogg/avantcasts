@@ -12,6 +12,7 @@ const views = require('koa-views');
 // }, {
 //   debug: false
 // })
+//
 const router = Router().loadMethods();
 
 const admin = require('firebase-admin');

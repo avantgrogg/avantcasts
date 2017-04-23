@@ -8,7 +8,8 @@
     "start-inspection": "neutrino start --presets neutrino-preset-node && node build/index.js --inspect",
     "build": "neutrino build --presets neutrino-preset-node",
     "test": "neutrino test --presets neutrino-preset-node neutrino-preset-mocha",
-    "webpack": "webpack --config webpack.config.js --progress --watch"
+    "webpack": "webpack --config webpack.config.js --progress --watch",
+    "server": "nodemon --inspect-brk src/index.js"
   },
   "keywords": [
     "koa",
